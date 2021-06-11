@@ -26,6 +26,7 @@ class Conferencista(models.Model):
     nombre = models.CharField(max_length=30)
     apellido = models.CharField(max_length=30)
     experiencia = models.TextField()
+    
 
     def __str__(self):
         return self.nombre

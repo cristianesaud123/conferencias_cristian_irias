@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
-from .models import Participante
+from .models import Conferencista, Participante
 
 def index(request):
     return render(request, 'registro/index.html')
@@ -56,9 +56,60 @@ def participantes(request):
         'participantes': data,
         'q': q
     }
-
+    
     return render(request, 'registro/participantes.html', ctx)
 
+def index(request):
+    return render(request, 'registro/index.html')
 
+    
+def conferencistas(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        experiencia = request.POST.get('experiencia')
+        
+        c = Conferencista(nombre=nombre, apellido=apellido, experiencia=experiencia)
+        c.save()
 
+        messages.add_message(request, messages.INFO, f'El conferencista {nombre} {apellido} ha sido registrado con éxito')
 
+        # return JsonResponse({
+        #     'nombre': nombre,
+        #     'apellido': apellido,
+        #     'correo': correo,
+        #     'twitter': twitter,
+        #     'OK': True,
+        #     'msj': 'El participante ha sido registrado con éxito'
+        # })
+
+        # ctx = {
+        #     'participantes': Participante.objects.all().order_by('nombre')
+        # }
+
+        # return HttpResponse('El participante ha sido registrado')
+        # return render(request, 'registro/participantes.html', ctx)
+    
+    # Metodo GET, PUT, PATCH, DELETE
+
+    # La primera consulta: select * from participantes order by nombre desc
+    # Realizar un Queryset con el ORM de Django
+    q = request.GET.get('q')
+
+    if q:
+        data = Conferencista.objects.filter(nombre__startswith=q).order_by('nombre')
+
+        '''
+            select * 
+            from conferencistas
+            where nombre like 'n%'
+        '''
+    else:
+        data = Conferencista.objects.all().order_by('nombre')
+
+    ctx = {
+        'conferencistas': data,
+        'q':q
+    }
+
+    return render(request, 'registro/conferencistas.html', ctx)
